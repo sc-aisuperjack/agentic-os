@@ -1,0 +1,75 @@
+services:
+  gateway:
+    build:
+      context: ../
+      dockerfile: services/gateway/Dockerfile
+    container_name: agentic_gateway
+    env_file: [../.env.local]
+    networks: [agent_mesh]
+    depends_on: [redis]
+
+  orchestrator:
+    build:
+      context: ../
+      dockerfile: services/orchestrator/Dockerfile
+    container_name: agentic_orchestrator
+    environment:
+      - PYTHONUNBUFFERED=1
+      - RENDER=${RENDER:-false}
+      - PYTHON_AGENT_PATH=/agents
+    volumes:
+      - ./../agents:/agents
+    env_file: [../.env.local]
+    networks: [agent_mesh]
+    depends_on: [gateway, redis]
+
+  agent-research:
+    build:
+      context: ../
+      dockerfile: services/agent-research/Dockerfile
+    container_name: agent_researcher
+    env_file: [../.env.local]
+    networks: [agent_mesh]
+    depends_on: [mongodb]
+
+  agent-strategist:
+    build:
+      context: ../
+      dockerfile: services/agent-strategist/Dockerfile
+    container_name: agent_strategist
+    env_file: [../.env.local]
+    networks: [agent_mesh]
+
+  mongodb:
+    image: mongo:7.0
+    container_name: agentic_mongo
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    ports: ["27019:27017"]
+    volumes:
+      - mongo_data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d
+    networks: [agent_mesh]
+
+  redis:
+    image: redis/redis-stack:latest
+    container_name: agentic_cache
+    ports:
+      - "6380:6379" # 👈 Host 6380 -> Container 6379 (Standard Redis)
+      - "8005:8001" # 👈 Host 8005 -> Container 8001 (Redis Insight)
+    networks: [agent_mesh]
+
+  nginx:
+    image: nginx:alpine
+    container_name: agentic_proxy
+    ports:
+      - "8080:80" # 👈 Windows friendly! Use http://localhost:8080
+    volumes: [./nginx.conf:/etc/nginx/conf.d/default.conf:ro]
+    depends_on: [gateway]
+    networks: [agent_mesh]
+
+networks:
+  agent_mesh:
+    driver: bridge
+
+volumes:
+  mongo_data:

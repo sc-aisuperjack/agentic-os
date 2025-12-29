@@ -1,0 +1,5 @@
+fastapi
+uvicorn[standard]
+pymongo>=4.9.0
+langchain-openai
+python-dotenv

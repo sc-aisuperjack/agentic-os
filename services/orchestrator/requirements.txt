@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+langchain
+langgraph
+langchain-google-genai
+langchain-openai
+python-frontmatter
+python-dotenv
+httpx

@@ -1,0 +1,18 @@
+# --- Core Framework (Always the latest for 3.14) ---
+fastapi
+uvicorn[standard]
+pydantic[email]
+pydantic-settings
+
+# --- Security & Auth (Argon2 for AI Superjack) ---
+python-jose[cryptography]
+passlib[argon2]
+
+# --- Async Networking ---
+httpx
+
+# --- Environment Management ---
+python-dotenv
+
+# --- Monitoring & Logging ---
+structlog

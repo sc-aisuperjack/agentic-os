@@ -1,0 +1,61 @@
+agentic-os
+│
+├── agents/                         # THE AGENT REPO (The "Source of Truth")
+│   ├── researcher.md               # Identity: Gemini-3-Pro + RAG tools
+│   ├── strategist.md               # Identity: GPT-5.2 + Analytical tools
+│   └── custom_agent.md             # Drop-in new agents here to scale
+│
+├── infra/                          # Infrastructure & Deployment
+│   ├── docker-compose.yml          # Local "Master Switch"
+│   ├── nginx.conf                  # Gateway routing & Rate limiting
+│   └── mongo-init/                 # Auto-creation of Vector Indexes
+│       └── init-indexes.js         # Setup for Semantic Cache & RAG
+│
+├── shared/                         # Internal Logic (The "Shared Brain")
+│   ├── pyproject.toml
+│   └── shared/
+│       ├── models/                 # Pydantic State & Message schemas
+│       │   └── state.py
+│       └── utils/
+│           ├── cache.py            # 👈 SEMANTIC CACHE (Vector similarity check)
+│           └── logger.py           # Centralized tracing/logging
+│
+├── services/                       # THE MICROSERVICES (Distributed Intelligence)
+│   │
+│   ├── gateway/                    # Front-Door (FastAPI)
+│   │   ├── app/
+│   │   │   ├── main.py             # User Entry Point
+│   │   │   └── auth.py             # JWT/Enterprise Security
+│   │   ├── Dockerfile
+│   │   └── requirements.txt
+│   │
+│   ├── orchestrator/               # THE COMMANDER (LangGraph)
+│   │   ├── app/
+│   │   │   ├── main.py             # Orchestration API
+│   │   │   ├── loader.py           # 👈 Dynamic Env & Agent Discovery
+│   │   │   ├── graph.py            # LangGraph routing & Decision flow
+│   │   │   └── factory.py          # 👈 LLM Switcher (Gemini 3 Pro / GPT-5.2)
+│   │   ├── Dockerfile              # Copies /agents from project root
+│   │   └── requirements.txt        # python-dotenv, python-frontmatter
+│   │
+│   ├── agent-research/             # RAG WORKER: Knowledge Expert
+│   │   ├── app/
+│   │   │   ├── main.py
+│   │   │   └── search.py           # Hybrid Vector Search (Mongo Atlas)
+│   │   └── ...
+│   │
+│   └── agent-strategist/           # STRATEGY WORKER: Analytical Expert
+│       ├── app/
+│       │   ├── main.py
+│       │   └── analysis.py
+│       └── ...
+│
+├── .github/                        # CI/CD: Automated Multi-Image builds
+│   └── workflows/
+│       └── build-deploy.yml
+│
+├── .env.local                      # LOCAL ONLY (GitIgnored)
+├── .env                            # Template for GitHub
+├── .gitignore                      # Security: Ignore keys and cache
+├── README.md                       # The Pitch (Architecture Documentation)
+└── requirements.txt                # Global dependencies

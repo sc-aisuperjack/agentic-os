@@ -1,0 +1,56 @@
+name: "🚀 Agentic OS: Build & Deploy"
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    strategy:
+      # Build all microservices in parallel (2025 Speed)
+      matrix:
+        service: [gateway, orchestrator, agent-research, agent-strategist]
+
+    steps:
+      - name: "🛒 Checkout Code"
+        uses: actions/checkout@v4
+
+      - name: "🏗 Set up Docker Buildx"
+        uses: docker/setup-buildx-action@v3
+
+      - name: "🔐 Login to GitHub Container Registry"
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "📦 Build and Push: ${{ matrix.service }}"
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          # Path to specific service Dockerfile
+          file: ./services/${{ matrix.service }}/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/${{ matrix.service }}:latest
+            ghcr.io/${{ github.repository }}/${{ matrix.service }}:${{ github.sha }}
+          # Optimized layer caching for Python 3.14
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy-to-render:
+    needs: build-and-push
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🚀 Trigger Render Deploy"
+        run: |
+          # Use Render Deploy Hooks (Fastest way to redeploy in 2025)
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_GATEWAY }}
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_ORCHESTRATOR }}
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_RESEARCHER }}
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_STRATEGIST }}
