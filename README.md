@@ -1,5 +1,8 @@
 # 🚀 AI Superjack: Agentic OS v2.0
 
+![Docker](https://img.shields.io/badge/docker-container-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-framework-green)
+
 **Enterprise-Grade Autonomous Marketing & ROI Growth Mesh**
 
 AI Superjack Agentic OS by Stefanos Cunning is a distributed, microservice-based AI operating system designed to orchestrate frontier models (**Gemini 1.5/3 Pro**, **GPT-4o/5.2**) into coordinated marketing "swarms." Built for 2026 growth standards, it leverages **LangGraph** for stateful orchestration, **FastAPI** for high-throughput async processing, and **Docker** for containerized scalability.
